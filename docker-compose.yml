@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  mmm:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mmm-calculator
+    ports:
+      - "3000:3000"
+    volumes:
+      - mmm-data:/app/data
+    environment:
+      - NODE_ENV=production
+      - DATABASE_PATH=./data/mmm.sqlite
+      - NEXT_PUBLIC_APP_NAME=mmm
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:3000/api/calculations"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  mmm-data:
+    driver: local
